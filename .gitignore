@@ -1,0 +1,21 @@
+*.pdf
+
+# Artefatos de compilacao em C
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+
+# Executaveis gerados nestes trabalhos
+/Trabalho_1/programa
+/Trabalho_1/programa.exe
+/Trabalho_1/teste_menu
+/Trabalho_2/app
+/Trabalho_2/trabalho_2
+/Trabalho_3/trabalho_3
+
+# Se o Makefile for gerado automaticamente, ignore em todos os subdiretorios
+**/Makefile
