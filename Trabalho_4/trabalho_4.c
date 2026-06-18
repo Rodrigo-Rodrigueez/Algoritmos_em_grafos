@@ -1,4 +1,4 @@
-#include "trabalho_3.h"
+#include "trabalho_4.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -159,7 +159,7 @@ void visualizar_grafo(vertice* vertice_origem){
             NoAdj* auxiliar_arestas = vertice_auxiliar->arestas;
             printf("%d", vertice_auxiliar->indice);
             while(auxiliar_arestas != NULL){
-                printf("-%d-> %d", auxiliar_arestas->v, auxiliar_arestas->peso);
+                printf(" -(%d)->%d", auxiliar_arestas->peso, auxiliar_arestas->v);
                 auxiliar_arestas = auxiliar_arestas->next;
             }
             printf("\n");
@@ -572,7 +572,9 @@ void ciclos(vertice* vertice_origem){
 
 static vertice* encontrar_vertice(vertice* vertice_origem, int idx) {
     vertice* v = vertice_origem;
-    while (v != NULL && v->indice != idx) v = v->next;
+    while (v != NULL && v->indice != idx) {
+        v = v->next;
+    }
     return v;
 }
 
@@ -643,7 +645,8 @@ static int* construir_cadeia(vertice* vertice_origem, int inicio, int* tamanho) 
             capacidade *= 2;
             cadeia = realloc(cadeia, capacidade * sizeof(int));
         }
-        cadeia[n++] = proximo;
+        cadeia[n] = proximo;
+        n++;
         atual = proximo;
     } while (atual != inicio);
 
@@ -680,14 +683,15 @@ void hierholzer(vertice* vertice_origem) {
     while (i < tamC) {
         if (tem_aresta_nao_visitada(vertice_origem, C[i])) {
             int tamH;
-            int* H = construir_cadeia(vertice_origem, C[i], &tamH);
+
+            int* H = construir_cadeia(vertice_origem, C[i], &tamH); //novo ciclo
 
             int novo_tam = tamC + tamH - 1;
             int* novo = malloc(novo_tam * sizeof(int));
 
-            memcpy(novo, C, (i + 1) * sizeof(int));
-            memcpy(novo + i + 1, H + 1, (tamH - 1) * sizeof(int));
-            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));
+            memcpy(novo, C, (i + 1) * sizeof(int)); //copia C até o ciclo H comeca
+            memcpy(novo + i + 1, H + 1, (tamH - 1) * sizeof(int));// copia H para C
+            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));//copia o restante de C
 
             free(C);
             free(H);
