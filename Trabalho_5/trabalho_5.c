@@ -1,7 +1,8 @@
-#include "trabalho_4.h"
+#include "trabalho_5.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 struct NoAdj {
     int v;
@@ -691,7 +692,7 @@ void hierholzer(vertice* vertice_origem) {
 
             memcpy(novo, C, (i + 1) * sizeof(int)); //copia C até o ciclo H comeca
             memcpy(novo + i + 1, H + 1, (tamH - 1) * sizeof(int));// copia H para C
-            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));//C = C u H
+            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));//copia o restante de C
 
             free(C);
             free(H);
@@ -711,4 +712,81 @@ void hierholzer(vertice* vertice_origem) {
     printf("\n");
 
     free(C);
+}
+
+void prim(vertice* vertice_origem, int raiz) {
+    if (vertice_origem == NULL) {
+        printf("Grafo vazio.\n");
+        return;
+    }
+
+    int n = 0;
+    vertice* v = vertice_origem;
+    while (v != NULL) { n++; v = v->next; }
+
+    int* indices = malloc(n * sizeof(int));
+    int* key     = malloc(n * sizeof(int));
+    int* pi      = malloc(n * sizeof(int));
+    int* inQ     = malloc(n * sizeof(int));
+
+    // linhas 1-3: key[u] = INF, π[u] = NIL
+    v = vertice_origem;
+    for (int i = 0; i < n; i++) {
+        indices[i] = v->indice;
+        key[i]     = INT_MAX;
+        pi[i]      = -1;
+        inQ[i]     = 1;
+        v = v->next;
+    }
+
+    // linha 4: key[r] = 0
+    int raiz_pos = encontrar_pos(indices, n, raiz);
+    if (raiz_pos == -1) raiz_pos = 0;
+    key[raiz_pos] = 0;
+
+    // linha 6: enquanto Q != vazio
+    for (int count = 0; count < n; count++) {
+
+        // linha 7: u = EXTRACT-MIN(Q)
+        int u_pos = -1;
+        for (int i = 0; i < n; i++) {
+            if (inQ[i] && (u_pos == -1 || key[i] < key[u_pos]))
+                u_pos = i;
+        }
+        if (u_pos == -1) break;
+
+        inQ[u_pos] = 0;
+        int u_idx = indices[u_pos];
+
+        // linha 8: para cada v em Adj[u]
+        vertice* u_vert = encontrar_vertice(vertice_origem, u_idx);
+        if (u_vert == NULL) continue;
+
+        NoAdj* adj = u_vert->arestas;
+        while (adj != NULL) {
+            int v_pos = encontrar_pos(indices, n, adj->v);
+
+            // linha 9: se v in Q e w(u,v) < key[v]
+            if (v_pos != -1 && inQ[v_pos] && adj->peso < key[v_pos]) {
+                pi[v_pos]  = u_idx;     // linha 10: π[v] = u
+                key[v_pos] = adj->peso; // linha 11: key[v] = w(u,v)
+            }
+            adj = adj->next;
+        }
+    }
+
+    int total = 0;
+    printf("Arvore Geradora Minima (Prim, raiz=%d):\n", indices[raiz_pos]);
+    for (int i = 0; i < n; i++) {
+        if (pi[i] != -1) {
+            printf("  %d -- %d  (peso: %d)\n", pi[i], indices[i], key[i]);
+            total += key[i];
+        }
+    }
+    printf("Peso total da AGM: %d\n", total);
+
+    free(indices);
+    free(key);
+    free(pi);
+    free(inQ);
 }

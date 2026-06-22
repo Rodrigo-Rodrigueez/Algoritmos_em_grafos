@@ -691,7 +691,7 @@ void hierholzer(vertice* vertice_origem) {
 
             memcpy(novo, C, (i + 1) * sizeof(int)); //copia C até o ciclo H comeca
             memcpy(novo + i + 1, H + 1, (tamH - 1) * sizeof(int));// copia H para C
-            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));//C = C u H
+            memcpy(novo + i + tamH, C + i + 1, (tamC - i - 1) * sizeof(int));//copia o restante de C
 
             free(C);
             free(H);
